@@ -8,6 +8,9 @@ pub enum Error {
     LengthNotEnough,
     Encoding,
     LockArgsInvalid = 5,
+    DexOwnerLockNotMatch,
+    DexTotalValueNotMatch,
+    DexSetupInvalid,
 }
 
 impl From<SysError> for Error {

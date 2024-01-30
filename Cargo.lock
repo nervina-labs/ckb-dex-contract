@@ -614,7 +614,6 @@ dependencies = [
 name = "dex-lock"
 version = "0.1.0"
 dependencies = [
- "blake2b-ref",
  "ckb-std",
 ]
 

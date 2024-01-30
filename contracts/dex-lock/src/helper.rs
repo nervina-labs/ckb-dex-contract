@@ -1,26 +1,10 @@
-use blake2b_ref::{Blake2b, Blake2bBuilder};
 use ckb_std::{
+    ckb_constants::Source,
     ckb_types::{bytes::Bytes, packed::Script, prelude::*},
-    high_level::load_script,
+    high_level::{load_cell_lock, load_script, QueryIter},
 };
 
 use crate::error::Error;
-
-pub fn get_blake2b() -> Blake2b {
-    Blake2bBuilder::new(32)
-        .personal(b"ckb-default-hash")
-        .build()
-}
-
-pub fn blake2b_160(message: &[u8]) -> [u8; 20] {
-    let mut blake2b = get_blake2b();
-    blake2b.update(&message);
-    let mut result = [0; 32];
-    blake2b.finalize(&mut result);
-    let mut hash = [0; 20];
-    hash.copy_from_slice(&result[0..20]);
-    hash
-}
 
 pub fn parse_array<const N: usize>(arr: &[u8]) -> Result<[u8; N], Error> {
     arr.try_into().map_err(|_| Error::Encoding)
@@ -51,6 +35,9 @@ impl DexArgs {
 
         let owner_lock = Script::from_slice(&data[..owner_size]).map_err(|_e| Error::Encoding)?;
         let setup = data[owner_size];
+        if setup != 0 {
+            return Err(Error::DexSetupInvalid);
+        }
         let total_value =
             u128::from_be_bytes(parse_array::<16>(&data[owner_size + 1..required_size])?);
 
@@ -80,4 +67,15 @@ impl DexArgs {
             unit_type_hash,
         })
     }
+}
+
+pub fn position_dex_lock_in_inputs() -> Result<usize, Error> {
+    let current_lock = load_script()?;
+    QueryIter::new(load_cell_lock, Source::Input)
+        .position(|lock| lock == current_lock)
+        .ok_or(Error::IndexOutOfBound)
+}
+
+pub fn inputs_contain_owner_cell(args: &DexArgs) -> bool {
+    QueryIter::new(load_cell_lock, Source::Input).any(|lock| lock == args.owner_lock)
 }
