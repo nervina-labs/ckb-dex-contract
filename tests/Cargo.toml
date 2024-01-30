@@ -1,0 +1,12 @@
+[package]
+name = "tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ckb-testtool = "0.10.1"
+rand_core = "0.6.3"
+hex = "0.4"
+blake2b-rs = "0.2"
+rand = "0.8.5"
+openssl = "0.10.38"

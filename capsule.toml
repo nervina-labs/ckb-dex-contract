@@ -1,0 +1,6 @@
+version = "0.10.1"
+deployment = "deployment.toml"
+
+[[contracts]]
+name = "dex-lock"
+template_type = "Rust"
