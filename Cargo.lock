@@ -117,7 +117,7 @@ dependencies = [
  "ckb-crypto",
  "ckb-dao-utils",
  "ckb-error",
- "ckb-hash 0.111.0",
+ "ckb-hash",
  "ckb-jsonrpc-types",
  "ckb-pow",
  "ckb-rational",
@@ -236,21 +236,10 @@ dependencies = [
  "cfg-if",
  "ckb-error",
  "ckb-fixed-hash",
- "ckb-hash 0.111.0",
+ "ckb-hash",
  "ckb-occupied-capacity",
  "molecule",
  "numext-fixed-uint",
-]
-
-[[package]]
-name = "ckb-gen-types"
-version = "0.112.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a12020d50dd3757cde0fdc88d3837b7a2ab503fe38bd11be86ddace11318c77"
-dependencies = [
- "cfg-if",
- "ckb-hash 0.112.1",
- "molecule",
 ]
 
 [[package]]
@@ -261,15 +250,6 @@ checksum = "8c88e5e2d6454be488fa5cf8b49175879353c6af969ff210dd6416f315b53120"
 dependencies = [
  "blake2b-ref",
  "blake2b-rs",
-]
-
-[[package]]
-name = "ckb-hash"
-version = "0.112.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25af660fc8746f7c756444e6aa47ede9a874206563b6a1ce1b230a5b86519392"
-dependencies = [
- "blake2b-ref",
 ]
 
 [[package]]
@@ -351,7 +331,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "481e76388993d7e6e0dd797e8532c60398901787e28d0638ca114254257b8813"
 dependencies = [
  "byteorder",
- "ckb-hash 0.111.0",
+ "ckb-hash",
  "ckb-types",
  "eaglesong",
  "log",
@@ -392,7 +372,7 @@ dependencies = [
  "byteorder",
  "ckb-chain-spec",
  "ckb-error",
- "ckb-hash 0.111.0",
+ "ckb-hash",
  "ckb-logger",
  "ckb-traits",
  "ckb-types",
@@ -402,14 +382,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "ckb-std"
-version = "0.15.0"
+name = "ckb-standalone-types"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "457042d634fe7c19ce60f9fc0c95d1c4ca823cc99581d4edb009105bb0534127"
+checksum = "b5c776d70eb4f60a22a3180857646d77b2da8d33c0c4a063ad9f6610fc94609f"
+dependencies = [
+ "blake2b-ref",
+ "cfg-if",
+ "molecule",
+]
+
+[[package]]
+name = "ckb-std"
+version = "0.14.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a08518aa0fd4ce069d3ec80b63dcd3d6543ad3805ad1c0b4e1d8e4d38f8a9fc"
 dependencies = [
  "buddy-alloc",
  "cc",
- "ckb-gen-types 0.112.1",
+ "ckb-standalone-types",
 ]
 
 [[package]]
@@ -441,7 +432,7 @@ dependencies = [
  "ckb-chain-spec",
  "ckb-crypto",
  "ckb-error",
- "ckb-hash 0.111.0",
+ "ckb-hash",
  "ckb-jsonrpc-types",
  "ckb-mock-tx-types",
  "ckb-resource",
@@ -474,8 +465,8 @@ dependencies = [
  "ckb-constant",
  "ckb-error",
  "ckb-fixed-hash",
- "ckb-gen-types 0.111.0",
- "ckb-hash 0.111.0",
+ "ckb-gen-types",
+ "ckb-hash",
  "ckb-merkle-mountain-range",
  "ckb-occupied-capacity",
  "ckb-rational",

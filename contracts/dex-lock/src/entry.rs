@@ -4,6 +4,7 @@ use crate::{
 };
 use ckb_std::{
     ckb_constants::Source,
+    ckb_types::prelude::Entity,
     high_level::{load_cell_capacity, load_cell_lock},
 };
 
@@ -19,7 +20,7 @@ pub fn main() -> Result<(), Error> {
     // to the seller's lock script
     let dex_index = position_dex_lock_in_inputs()?;
     let output_lock = load_cell_lock(dex_index, Source::Output)?;
-    if args.owner_lock != output_lock {
+    if args.owner_lock.as_slice() != output_lock.as_slice() {
         return Err(Error::DexOwnerLockNotMatch);
     }
 
