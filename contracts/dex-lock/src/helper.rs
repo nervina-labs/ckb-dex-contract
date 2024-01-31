@@ -29,7 +29,7 @@ impl DexArgs {
         }
         let owner_size = u32::from_le_bytes(parse_array::<4>(&data[0..4])?) as usize;
         let required_size = owner_size + 17;
-        if data.len() < (required_size + 17) {
+        if data.len() < required_size {
             return Err(Error::LockArgsInvalid);
         }
 

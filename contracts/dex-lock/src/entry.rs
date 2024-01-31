@@ -22,8 +22,10 @@ pub fn main() -> Result<(), Error> {
     if args.owner_lock != output_lock {
         return Err(Error::DexOwnerLockNotMatch);
     }
-    let output_capacity = load_cell_capacity(dex_index, Source::Output)?;
-    if args.total_value > output_capacity.into() {
+
+    let dex_input_capacity = load_cell_capacity(dex_index, Source::Input)? as u128;
+    let output_capacity = load_cell_capacity(dex_index, Source::Output)? as u128;
+    if (args.total_value + dex_input_capacity) > output_capacity {
         return Err(Error::DexTotalValueNotMatch);
     }
 
