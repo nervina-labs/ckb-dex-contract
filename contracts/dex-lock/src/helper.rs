@@ -29,7 +29,7 @@ impl DexArgs {
         }
         let owner_size = u32::from_le_bytes(parse_array::<4>(&data[0..4])?) as usize;
         let required_size = owner_size + 17;
-        if data.len() < (required_size + 17) {
+        if data.len() < required_size {
             return Err(Error::LockArgsInvalid);
         }
 
@@ -72,10 +72,11 @@ impl DexArgs {
 pub fn position_dex_lock_in_inputs() -> Result<usize, Error> {
     let current_lock = load_script()?;
     QueryIter::new(load_cell_lock, Source::Input)
-        .position(|lock| lock == current_lock)
+        .position(|lock| lock.as_slice() == current_lock.as_slice())
         .ok_or(Error::IndexOutOfBound)
 }
 
 pub fn inputs_contain_owner_cell(args: &DexArgs) -> bool {
-    QueryIter::new(load_cell_lock, Source::Input).any(|lock| lock == args.owner_lock)
+    QueryIter::new(load_cell_lock, Source::Input)
+        .any(|lock| lock.as_slice() == args.owner_lock.as_slice())
 }
