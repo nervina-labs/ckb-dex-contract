@@ -19,6 +19,7 @@ const LOCK_ARGS_INVALID: i8 = 5;
 const DEX_OWNER_LOCK_NOT_MATCH: i8 = 6;
 const DEX_TOTAL_VALUE_NOT_MATCH: i8 = 7;
 const DEX_SETUP_INVALID: i8 = 8;
+const TOTAL_VALUE_OVERFLOW: i8 = 9;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum DexError {
@@ -27,6 +28,7 @@ enum DexError {
     DexOwnerLockNotMatch,
     DexTotalValueNotMatch,
     DexSetupInvalid,
+    TotalValueOverflow,
 }
 
 fn create_test_context(error: DexError) -> (Context, TransactionView) {
@@ -80,11 +82,16 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         .build_script(&dex_out_point, dex_args1.to_vec().into())
         .expect("script");
 
+    let total_value = if error == DexError::TotalValueOverflow {
+        u128::MAX - 1
+    } else {
+        9_8765_0000_1234u128
+    };
     let dex_args2 = DexArgs {
-        owner_lock:     owner_lock2.clone(),
-        setup:          0u8,
-        total_value:    9_8765_0000_1234u128,
-        receiver_lock:  None,
+        owner_lock: owner_lock2.clone(),
+        setup: 0u8,
+        total_value,
+        receiver_lock: None,
         unit_type_hash: None,
     };
     let mut dex_args2_vec = dex_args2.to_vec();
@@ -214,4 +221,12 @@ fn test_dex_taker_order_total_setup_invalid_error() {
     // run
     let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
     assert_script_error(err, DEX_SETUP_INVALID);
+}
+
+#[test]
+fn test_dex_taker_order_total_value_overflow_error() {
+    let (context, tx) = create_test_context(DexError::TotalValueOverflow);
+    // run
+    let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+    assert_script_error(err, TOTAL_VALUE_OVERFLOW);
 }

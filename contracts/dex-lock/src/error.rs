@@ -11,6 +11,7 @@ pub enum Error {
     DexOwnerLockNotMatch,
     DexTotalValueNotMatch,
     DexSetupInvalid,
+    TotalValueOverflow,
 }
 
 impl From<SysError> for Error {
