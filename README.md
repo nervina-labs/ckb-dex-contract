@@ -3,11 +3,11 @@
 Build contracts:
 
 ``` sh
-make build-release
+make build
 ```
 
 Run tests:
 
 ``` sh
-make test-release
+make test
 ```

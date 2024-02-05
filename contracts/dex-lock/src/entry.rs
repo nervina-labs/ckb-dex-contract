@@ -26,7 +26,13 @@ pub fn main() -> Result<(), Error> {
 
     let dex_input_capacity = load_cell_capacity(dex_index, Source::Input)? as u128;
     let output_capacity = load_cell_capacity(dex_index, Source::Output)? as u128;
-    if (args.total_value + dex_input_capacity) > output_capacity {
+
+    // Prevent total_value(u128) from overflowing
+    let total_capacity = args
+        .total_value
+        .checked_add(dex_input_capacity)
+        .ok_or(Error::TotalValueOverflow)?;
+    if total_capacity > output_capacity {
         return Err(Error::DexTotalValueNotMatch);
     }
 
