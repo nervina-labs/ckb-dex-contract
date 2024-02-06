@@ -14,11 +14,9 @@ const MIN_ARGS_SIZE: usize = 66;
 #[derive(Debug, Clone)]
 pub struct DexArgs {
     // the minimum length of serialized lock script is 49bytes
-    pub owner_lock:     Script,
-    pub setup:          u8,
-    pub total_value:    u128,
-    pub receiver_lock:  Option<Script>,
-    pub unit_type_hash: Option<[u8; 20]>,
+    pub owner_lock:  Script,
+    pub setup:       u8,
+    pub total_value: u128,
 }
 
 impl DexArgs {
@@ -41,30 +39,10 @@ impl DexArgs {
         let total_value =
             u128::from_be_bytes(parse_array::<16>(&data[owner_size + 1..required_size])?);
 
-        let option = &data[required_size..];
-        let mut receiver_lock = None;
-        let mut unit_type_hash = None;
-        if option.len() == 20 {
-            unit_type_hash = Some(parse_array::<20>(option)?);
-        } else if option.len() > required_size + 4 {
-            let receiver_size = u32::from_le_bytes(parse_array::<4>(&option[0..4])?) as usize;
-            if option.len() < receiver_size {
-                return Err(Error::LockArgsInvalid);
-            }
-            receiver_lock =
-                Some(Script::from_slice(&option[..receiver_size]).map_err(|_e| Error::Encoding)?);
-
-            if option.len() == receiver_size + 20 {
-                unit_type_hash = Some(parse_array::<20>(&option[option.len() - 20..])?)
-            }
-        }
-
         Ok(DexArgs {
             owner_lock,
             setup,
             total_value,
-            receiver_lock,
-            unit_type_hash,
         })
     }
 }
