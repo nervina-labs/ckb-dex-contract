@@ -33,7 +33,9 @@ impl DexArgs {
 
         let owner_lock = Script::from_slice(&data[..owner_size]).map_err(|_e| Error::Encoding)?;
         let setup = data[owner_size];
-        if setup != 0 {
+        // If the third bit of setup is 0, it means FT(0b0000_0000), otherwise it means
+        // NFT(0b0000_0100)
+        if setup != 0 && setup != 4 {
             return Err(Error::DexSetupInvalid);
         }
         let total_value =
