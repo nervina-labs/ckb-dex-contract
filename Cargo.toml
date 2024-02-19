@@ -1,5 +1,6 @@
 [workspace]
 members = ["tests", "contracts/dex-lock"]
+resolver = "2"
 
 [profile.release]
 overflow-checks = true
