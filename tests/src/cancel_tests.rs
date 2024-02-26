@@ -16,13 +16,13 @@ const MAX_CYCLES: u64 = 70_000_000;
 
 // error numbers
 const LOCK_ARGS_INVALID: i8 = 5;
-const DEX_TOTAL_VALUE_NOT_MATCH: i8 = 7;
+const DEX_FT_TOTAL_VALUE_NOT_MATCH: i8 = 7;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum DexError {
     NoError,
     LockArgsInvalid,
-    DexTotalValueNotMatch,
+    DexFTTotalValueNotMatch,
 }
 
 fn create_test_context(error: DexError) -> (Context, TransactionView) {
@@ -113,7 +113,7 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
             .previous_output(input_out_point2)
             .build(),
     ];
-    if error != DexError::DexTotalValueNotMatch {
+    if error != DexError::DexFTTotalValueNotMatch {
         inputs.push(
             CellInput::new_builder()
                 .previous_output(input_out_point3)
@@ -181,8 +181,8 @@ fn test_dex_cancel_order_lock_args_error() {
 
 #[test]
 fn test_dex_cancel_order_owner_lock_not_match_error() {
-    let (context, tx) = create_test_context(DexError::DexTotalValueNotMatch);
+    let (context, tx) = create_test_context(DexError::DexFTTotalValueNotMatch);
     // run
     let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-    assert_script_error(err, DEX_TOTAL_VALUE_NOT_MATCH);
+    assert_script_error(err, DEX_FT_TOTAL_VALUE_NOT_MATCH);
 }
