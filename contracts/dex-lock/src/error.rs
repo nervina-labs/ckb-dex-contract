@@ -9,9 +9,10 @@ pub enum Error {
     Encoding,
     LockArgsInvalid = 5,
     DexOwnerLockNotMatch,
-    DexTotalValueNotMatch,
+    DexFTTotalValueNotMatch,
+    DexNFTTotalValueNotMatch,
     DexSetupInvalid,
-    TotalValueOverflow,
+    TotalValueOverflow = 10,
 }
 
 impl From<SysError> for Error {

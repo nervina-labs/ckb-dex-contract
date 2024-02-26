@@ -17,16 +17,18 @@ const MAX_CYCLES: u64 = 70_000_000;
 // error numbers
 const LOCK_ARGS_INVALID: i8 = 5;
 const DEX_OWNER_LOCK_NOT_MATCH: i8 = 6;
-const DEX_TOTAL_VALUE_NOT_MATCH: i8 = 7;
-const DEX_SETUP_INVALID: i8 = 8;
-const TOTAL_VALUE_OVERFLOW: i8 = 9;
+const DEX_FT_TOTAL_VALUE_NOT_MATCH: i8 = 7;
+const DEX_NFT_TOTAL_VALUE_NOT_MATCH: i8 = 8;
+const DEX_SETUP_INVALID: i8 = 9;
+const TOTAL_VALUE_OVERFLOW: i8 = 10;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum DexError {
     NoError,
     LockArgsInvalid,
     DexOwnerLockNotMatch,
-    DexTotalValueNotMatch,
+    DexFTTotalValueNotMatch,
+    DexNFTTotalValueNotMatch,
     DexSetupInvalid,
     TotalValueOverflow,
 }
@@ -68,6 +70,8 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
 
     let setup = if error == DexError::DexSetupInvalid {
         3u8
+    } else if error == DexError::DexNFTTotalValueNotMatch {
+        4u8
     } else {
         0u8
     };
@@ -135,8 +139,10 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
             .build(),
     ];
 
-    let output1_capacity = if error == DexError::DexTotalValueNotMatch {
+    let output1_capacity = if error == DexError::DexFTTotalValueNotMatch {
         1234_5678_0000u64
+    } else if error == DexError::DexNFTTotalValueNotMatch {
+        1000_5678_0000u64
     } else {
         1234_5678_0000u64 + 300_0000_0000u64
     };
@@ -208,11 +214,19 @@ fn test_dex_taker_order_owner_lock_not_match_error() {
 }
 
 #[test]
-fn test_dex_taker_order_total_value_not_match_error() {
-    let (context, tx) = create_test_context(DexError::DexTotalValueNotMatch);
+fn test_dex_ft_taker_order_total_value_not_match_error() {
+    let (context, tx) = create_test_context(DexError::DexFTTotalValueNotMatch);
     // run
     let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-    assert_script_error(err, DEX_TOTAL_VALUE_NOT_MATCH);
+    assert_script_error(err, DEX_FT_TOTAL_VALUE_NOT_MATCH);
+}
+
+#[test]
+fn test_dex_nft_taker_order_total_value_not_match_error() {
+    let (context, tx) = create_test_context(DexError::DexNFTTotalValueNotMatch);
+    // run
+    let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+    assert_script_error(err, DEX_NFT_TOTAL_VALUE_NOT_MATCH);
 }
 
 #[test]
