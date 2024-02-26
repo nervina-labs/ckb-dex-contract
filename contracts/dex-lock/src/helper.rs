@@ -15,6 +15,7 @@ const MIN_ARGS_SIZE: usize = 66;
 pub struct DexArgs {
     // the minimum length of serialized lock script is 49bytes
     pub owner_lock:  Script,
+    // 0b_xxxx_x0xx is for UDT asset and 0b_xxxx_x1xx is for NFT
     pub setup:       u8,
     pub total_value: u128,
 }
@@ -33,8 +34,8 @@ impl DexArgs {
 
         let owner_lock = Script::from_slice(&data[..owner_size]).map_err(|_e| Error::Encoding)?;
         let setup = data[owner_size];
-        // If the third bit of setup is 0, it means FT(0b0000_0000), otherwise it means
-        // NFT(0b0000_0100)
+        // If the third bit of setup is 0, it means FT(0b_xxxx_x0xx), otherwise it means
+        // NFT(0b_xxxx_x1xx)
         if setup != 0 && setup != 4 {
             return Err(Error::DexSetupInvalid);
         }
@@ -46,6 +47,14 @@ impl DexArgs {
             setup,
             total_value,
         })
+    }
+
+    pub fn is_udt(&self) -> bool {
+        self.setup | 0b0000_0000 == 0b0000_0000
+    }
+
+    pub fn is_nft(&self) -> bool {
+        self.setup & 0b0000_0100 == 0b0000_0100
     }
 }
 

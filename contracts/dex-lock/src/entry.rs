@@ -10,8 +10,8 @@ use ckb_std::{
 
 pub fn main() -> Result<(), Error> {
     let args = DexArgs::from_script()?;
-    // When the inputs contain a cell whose lock script is owner, it means that the owner is
-    // cancelling the maker order.
+    // When the inputs contain a cell whose lock script is owner, it means that the owner can do
+    // anything including cancel the order
     if inputs_contain_owner_cell(&args) {
         return Ok(());
     }
@@ -27,13 +27,19 @@ pub fn main() -> Result<(), Error> {
     let dex_input_capacity = load_cell_capacity(dex_index, Source::Input)? as u128;
     let output_capacity = load_cell_capacity(dex_index, Source::Output)? as u128;
 
-    // Prevent total_value(u128) from overflowing
-    let total_capacity = args
-        .total_value
-        .checked_add(dex_input_capacity)
-        .ok_or(Error::TotalValueOverflow)?;
-    if total_capacity > output_capacity {
-        return Err(Error::DexTotalValueNotMatch);
+    if args.is_nft() {
+        if args.total_value > output_capacity {
+            return Err(Error::DexNFTTotalValueNotMatch);
+        }
+    } else if args.is_udt() {
+        // Prevent total_value(u128) from overflowing
+        let total_capacity = args
+            .total_value
+            .checked_add(dex_input_capacity)
+            .ok_or(Error::TotalValueOverflow)?;
+        if total_capacity > output_capacity {
+            return Err(Error::DexFTTotalValueNotMatch);
+        }
     }
 
     Ok(())
