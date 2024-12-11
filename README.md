@@ -1,6 +1,6 @@
 # Simple DEX Lock Contract 
 
-# SFT DEX Contract Design Requirements
+> **Note: This code has not been audited by security agencies; please use it with caution.**
 
 ## Background
 
