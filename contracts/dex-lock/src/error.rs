@@ -13,6 +13,8 @@ pub enum Error {
     DexNFTTotalValueNotMatch,
     DexSetupInvalid,
     TotalValueOverflow = 10,
+    UnitTypeNotMatch,
+    TotalValueNotMatch,
 }
 
 impl From<SysError> for Error {

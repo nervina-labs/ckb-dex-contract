@@ -4,3 +4,7 @@ deployment = "deployment.toml"
 [[contracts]]
 name = "dex-lock"
 template_type = "Rust"
+
+[[contracts]]
+name = "sudt"
+template_type = "Rust"

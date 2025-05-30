@@ -56,7 +56,7 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         unit_type_hash: None,
     };
     let dex_lock_script1 = context
-        .build_script(&dex_out_point, dex_args1.to_vec().into())
+        .build_script(&dex_out_point, dex_args1.to_vec().unwrap().into())
         .expect("script");
 
     let dex_args2 = DexArgs {
@@ -66,7 +66,7 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         receiver_lock:  None,
         unit_type_hash: None,
     };
-    let mut dex_args2_vec = dex_args2.to_vec();
+    let mut dex_args2_vec = dex_args2.to_vec().unwrap();
     if error == DexError::LockArgsInvalid {
         dex_args2_vec.reverse();
     }
