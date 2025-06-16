@@ -39,7 +39,7 @@ args:
 | Bits | Meaning | MVP |
 | --- | --- | --- |
 | 0 | 0: `receiver_lock` does not exist; the receiver is the same as the `owner_lock`. 1: `receiver_lock` exists. | Only implement 0. |
-| 1 | 0: Settlement in CKB without `unit_type`. 1: `unit_type_hash` exists, and compatible assets are settled using SUDT/UDT. | Only implement 0. |
+| 1 | 0: Settlement in CKB without `unit_type`. 1: `unit_type_hash` exists, and compatible assets are settled using SUDT/UDT. | |
 | 2 | 0: Fungible token. 1: Non-fungible token. |  |
 | 3 | Reserved. |  |
 | 4-7 | Version (`uint4`). | 0000 |
@@ -58,8 +58,8 @@ args:
 
 `unit_type_hash`
 
-- Size: 20 bytes.
-- Specifies the pricing unit. Optional; if absent, the default is CKB. If present, verification is required to ensure it equals `typescript_hash[:20]`, and the default cell data must conform to the SUDT definition.
+- Size: 32 bytes.
+- Specifies the pricing unit. Optional; if absent, the default is CKB. If present, verification is required to ensure it equals `typescript_hash`, and the default cell data must conform to the SUDT definition.
 
 ## Transaction Templates
 
@@ -149,9 +149,7 @@ Output:
 
 ---
 
-## Features Not Yet Implemented
-
-### Listing (Payment in XUDT with a Separate Recipient Address)
+### Listing (Payment in XUDT)
 
 ```yaml
 Input:
@@ -168,16 +166,16 @@ Output:
         type: xudt_a
         lock: SDL
             owner_lock: <owner_lock>
-            setup_byte: 0x03
+            setup_byte: 0x02
             total_value: u128
-            receiver_lock: <receiver_lock>
+            receiver_lock: None
             unit_type_hash: <unit_type_hash>
 
     ckb_cell:
         lock: <any_lock>
 ```
 
-### Matching (Payment in XUDT with a Separate Recipient Address)
+### Matching (Payment in XUDT)
 
 ```yaml
 Input:
@@ -186,9 +184,9 @@ Input:
         type: xudt_a
         lock: SDL
             owner_lock: <owner_lock>
-            setup_byte: 0x03
+            setup_byte: 0x02
             total_value: u128
-            receiver_lock: <receiver_lock>
+            receiver_lock: None
             unit_type_hash: <unit_type_hash>
 
     xudt_cell:
@@ -202,12 +200,7 @@ Output:
     xudt_cell:
         data: <total_value>
         type: **xudt_b (of_hash == unit_type_hash)**
-        lock: <receiver_lock>
-
-    ckb_cell: # Seller's CKB refund (tentative)
-        capacity: size(SDL_cell) - size(plain_cell)
-        lock: <receiver_lock>
-    
+        lock: <owner_lock>
     xudt_cell:
         data: amount
         type: xudt_a

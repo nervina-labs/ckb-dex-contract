@@ -69,21 +69,28 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         .expect("script");
 
     let setup = if error == DexError::DexSetupInvalid {
-        3u8
+        1u8
     } else if error == DexError::DexNFTTotalValueNotMatch {
         4u8
     } else {
         0u8
     };
+
+    let receiver_lock: Option<[u8; 32]> = if error == DexError::DexSetupInvalid {
+        Some([0u8; 32])
+    } else {
+        None
+    };
+
     let dex_args1 = DexArgs {
         owner_lock: owner_lock1.clone(),
         setup,
         total_value: 1234_5678_0000u128,
-        receiver_lock: None,
+        receiver_lock,
         unit_type_hash: None,
     };
     let dex_lock_script1 = context
-        .build_script(&dex_out_point, dex_args1.to_vec().into())
+        .build_script(&dex_out_point, dex_args1.to_vec().unwrap().into())
         .expect("script");
 
     let total_value = if error == DexError::TotalValueOverflow {
@@ -98,7 +105,7 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         receiver_lock: None,
         unit_type_hash: None,
     };
-    let mut dex_args2_vec = dex_args2.to_vec();
+    let mut dex_args2_vec = dex_args2.to_vec().unwrap();
     if error == DexError::LockArgsInvalid {
         dex_args2_vec.reverse();
     }

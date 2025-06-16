@@ -10,6 +10,8 @@ mod cancel_tests;
 mod helper;
 #[cfg(test)]
 mod taker_tests;
+#[cfg(test)]
+mod taker_udt_tests;
 
 const TEST_ENV_VAR: &str = "CAPSULE_TEST_ENV";
 
