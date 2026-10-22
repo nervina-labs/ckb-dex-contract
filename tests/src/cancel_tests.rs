@@ -131,7 +131,6 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
         CellOutput::new_builder()
             .capacity(240_0000_0000u64.pack())
             .lock(owner_lock.clone())
-            .type_(Some(asset_type).pack())
             .build(),
         CellOutput::new_builder()
             .capacity(400_0000_0000u64.pack())
@@ -180,7 +179,7 @@ fn test_dex_cancel_order_lock_args_error() {
 }
 
 #[test]
-fn test_dex_cancel_order_owner_lock_not_match_error() {
+fn test_dex_cancel_order_without_owner_input_error() {
     let (context, tx) = create_test_context(DexError::DexFTTotalValueNotMatch);
     // run
     let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();

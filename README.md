@@ -120,6 +120,7 @@ Output:
   - Non-fungible token:
     - `input[k].SDL.total_value <= output[k].capacity`
   - `input[k].SDL.receiver_lock == output[k].lock`
+  - CKB settlement requires `output[k].type == None`.
 
 ### Canceling an Order
 

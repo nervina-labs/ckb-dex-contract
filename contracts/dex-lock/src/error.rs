@@ -15,6 +15,7 @@ pub enum Error {
     TotalValueOverflow = 10,
     UnitTypeNotMatch,
     TotalValueNotMatch,
+    DexCKBTypeNotMatch,
 }
 
 impl From<SysError> for Error {

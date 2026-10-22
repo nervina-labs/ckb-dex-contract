@@ -21,6 +21,7 @@ const DEX_FT_TOTAL_VALUE_NOT_MATCH: i8 = 7;
 const DEX_NFT_TOTAL_VALUE_NOT_MATCH: i8 = 8;
 const DEX_SETUP_INVALID: i8 = 9;
 const TOTAL_VALUE_OVERFLOW: i8 = 10;
+const DEX_CKB_TYPE_NOT_MATCH: i8 = 13;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum DexError {
@@ -31,6 +32,7 @@ enum DexError {
     DexNFTTotalValueNotMatch,
     DexSetupInvalid,
     TotalValueOverflow,
+    DexCKBTypeNotMatch,
 }
 
 fn create_test_context(error: DexError) -> (Context, TransactionView) {
@@ -159,18 +161,18 @@ fn create_test_context(error: DexError) -> (Context, TransactionView) {
     } else {
         owner_lock2
     };
-    let outputs = vec![
-        CellOutput::new_builder()
-            .capacity(output1_capacity.pack())
-            .lock(owner_lock1)
-            .type_(Some(asset_type.clone()).pack())
-            .build(),
-        CellOutput::new_builder()
-            .capacity(output2_capacity.pack())
-            .lock(output2_lock)
-            .type_(Some(asset_type).pack())
-            .build(),
-    ];
+    let mut output1_builder = CellOutput::new_builder()
+        .capacity(output1_capacity.pack())
+        .lock(owner_lock1);
+    if error == DexError::DexCKBTypeNotMatch {
+        output1_builder = output1_builder.type_(Some(asset_type).pack());
+    }
+    let output1 = output1_builder.build();
+    let output2 = CellOutput::new_builder()
+        .capacity(output2_capacity.pack())
+        .lock(output2_lock)
+        .build();
+    let outputs = vec![output1, output2];
 
     let outputs_data = vec![asset_amount1, asset_amount2];
 
@@ -250,4 +252,11 @@ fn test_dex_taker_order_total_value_overflow_error() {
     // run
     let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
     assert_script_error(err, TOTAL_VALUE_OVERFLOW);
+}
+
+#[test]
+fn test_dex_taker_order_ckb_payment_must_not_have_type() {
+    let (context, tx) = create_test_context(DexError::DexCKBTypeNotMatch);
+    let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+    assert_script_error(err, DEX_CKB_TYPE_NOT_MATCH);
 }

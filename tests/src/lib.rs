@@ -9,6 +9,10 @@ use std::str::FromStr;
 mod cancel_tests;
 mod helper;
 #[cfg(test)]
+mod identical_order_tests;
+#[cfg(test)]
+mod regression_tests;
+#[cfg(test)]
 mod taker_tests;
 #[cfg(test)]
 mod taker_udt_tests;

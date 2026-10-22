@@ -92,11 +92,28 @@ impl DexArgs {
     }
 }
 
-pub fn position_dex_lock_in_inputs() -> Result<usize, Error> {
+pub fn for_each_dex_input<F>(mut callback: F) -> Result<(), Error>
+where
+    F: FnMut(usize) -> Result<(), Error>,
+{
     let current_lock = load_script()?;
+    let mut count = 0;
+
     QueryIter::new(load_cell_lock, Source::Input)
-        .position(|lock| lock.as_slice() == current_lock.as_slice())
-        .ok_or(Error::IndexOutOfBound)
+        .enumerate()
+        .try_for_each(|(index, lock)| {
+            if lock.as_slice() == current_lock.as_slice() {
+                count += 1;
+                callback(index)?;
+            }
+            Ok::<(), Error>(())
+        })?;
+
+    if count == 0 {
+        return Err(Error::IndexOutOfBound);
+    }
+
+    Ok(())
 }
 
 pub fn inputs_contain_owner_cell(args: &DexArgs) -> bool {
